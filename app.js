@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/order');
+const clientRoutes = require('./api/routes/client');
 
 mongoose.connect(
     'mongodb://bucky:cooldev086@ds115963.mlab.com:15963/node-rest-db', {
@@ -35,7 +36,8 @@ app.use((req, res, next) => {
 
 // Routes which is handle for each requested
 app.use('/products', productRoutes);
-app.use('/order', orderRoutes);
+app.use('/orders', orderRoutes);
+app.use('/clients', clientRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');
