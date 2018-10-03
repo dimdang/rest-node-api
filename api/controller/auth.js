@@ -1,18 +1,25 @@
-const Client = require('../models/client');
+const BearerStrategy = require('passport-http-bearer').Strategy
+const Token = require('../models/token');
 
-passport.use('client-basic', new BasicStrategy(
-    function(username, password, callback) {
-        Client.findOne({ id: username }, function(err, client) {
+passport.use(new BearerStrategy(
+    function(accessToken, callback) {
+        Token.findOne({ value: accessToken }, function(err, token) {
             if (err) { return callback(err); }
 
-            if (!client || client.secret !== password) {
-                return callback(null, false);
-            }
+            // No token found
+            if (!token) { return callback(null, false); }
 
-            //Success
-            return callback(null, client);
+            User.findOne({ _id: token.userId }, function(err, user) {
+                if (err) { return callback(err); }
+
+                // No user found
+                if (!user) { return callback(null, false); }
+
+                // Simple example with no scope
+                callback(null, user, { scope: '*' });
+            });
         });
     }
 ));
 
-exports.isClientAuthenticated = passport.authenticate('client-basic', { session: false });
+exports.isBearerAuthenticated = passport.authenticate('bearer', { session: false });
